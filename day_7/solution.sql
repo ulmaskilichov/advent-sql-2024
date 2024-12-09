@@ -1,6 +1,3 @@
-workshop_elves
-
-
 with max_min_skills as (select
 	primary_skill,
 	max(years_experience) as max_skill,

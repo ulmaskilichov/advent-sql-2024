@@ -1,0 +1,38 @@
+WITH RECURSIVE T AS (
+    SELECT
+        STAFF_ID,
+        STAFF_NAME,
+        MANAGER_ID,
+        1 AS LEVEL_T,
+        ARRAY[STAFF_ID] AS PATH
+    FROM STAFF WHERE STAFF_ID=1
+    UNION ALL
+    SELECT
+        SS.STAFF_ID,
+        SS.STAFF_NAME,
+        SS.MANAGER_ID,
+        LEVEL_T + 1,
+        PATH || SS.STAFF_ID
+    FROM STAFF SS
+        JOIN T ON SS.MANAGER_ID=T.STAFF_ID
+), A AS (
+    SELECT
+        STAFF_ID,
+        STAFF_NAME,
+        LEVEL_T,
+        UNNEST(PATH)::VARCHAR AS PATH_T
+    FROM T
+)
+SELECT
+    STAFF_ID,
+    STAFF_NAME,
+    LEVEL_T,
+    STRING_AGG(PATH_T,
+    ', ' ORDER BY PATH_T) ANS
+FROM A
+GROUP BY
+    STAFF_ID,
+    STAFF_NAME,
+    LEVEL_T
+ORDER BY
+    LEVEL_T DESC
